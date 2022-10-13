@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
-  Person findByFullName(String fullName);
+  Person findFirstByCpf(String cpf);
 
   public Optional<Person> findByCpf(String cpf);
 

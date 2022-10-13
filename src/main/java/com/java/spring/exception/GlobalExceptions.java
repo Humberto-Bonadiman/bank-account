@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+
 @ControllerAdvice
 public class GlobalExceptions {
 
@@ -20,5 +22,18 @@ public class GlobalExceptions {
   @ExceptionHandler({PersonAlreadyRegisteredException.class})
   public ResponseEntity<Object> handlerConflict(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler({
+      JWTVerificationException.class,
+      TokenNotFoundException.class,
+  })
+  public ResponseEntity<Object> handlerUnauthorized(RuntimeException exception) {
+    return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler({PersonNotRegisteredException.class})
+  public ResponseEntity<Object> handlerNotFound(RuntimeException exception) {
+    return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.NOT_FOUND);
   }
 }

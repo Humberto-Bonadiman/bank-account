@@ -24,4 +24,9 @@ public class PersonController {
   public ResponseEntity<Person> create(@RequestBody PersonDto personDto) {
     return ResponseEntity.status(HttpStatus.CREATED).body(personService.create(personDto));
   }
+
+  @PostMapping("/login")
+  public ResponseEntity<String> generateToken(@RequestBody PersonDto personDto) {
+    return ResponseEntity.status(HttpStatus.OK).body(personService.generateToken(personDto));
+  }
 }
