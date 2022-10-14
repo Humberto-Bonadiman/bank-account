@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping("/person")
-public class PersonController {
+public class PersonController implements PersonControllerInterface<PersonDto, Person> {
 
   @Autowired
   PersonService personService;

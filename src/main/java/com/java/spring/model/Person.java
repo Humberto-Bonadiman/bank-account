@@ -2,11 +2,14 @@ package com.java.spring.model;
 
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,6 +25,9 @@ public class Person {
 
   @Column(nullable = false)
   private String cpf;
+
+  @OneToOne(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private Account account;
 
   public Long getId() {
     return id;
@@ -47,9 +53,17 @@ public class Person {
     this.cpf = cpf;
   }
 
+  public Account getAccount() {
+    return account;
+  }
+
+  public void setAccount(Account account) {
+    this.account = account;
+  }
+
   @Override
   public int hashCode() {
-    return Objects.hash(cpf, fullName, id);
+    return Objects.hash(cpf, fullName, id, account);
   }
 
   @Override
@@ -60,8 +74,7 @@ public class Person {
     Person other = (Person) obj;
     return Objects.equals(cpf, other.cpf)
         && Objects.equals(fullName, other.fullName)
-        && Objects.equals(id, other.id);
-}
-
-  
+        && Objects.equals(id, other.id)
+        && Objects.equals(account, other.account);
+  }
 }
