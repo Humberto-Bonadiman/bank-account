@@ -34,7 +34,8 @@ public class GlobalExceptions {
       ValueDepositException.class,
       NegativeValueException.class,
       InsufficientBalanceException.class,
-      IncorrectPasswordException.class
+      IncorrectPasswordException.class,
+      DifferentIdException.class
   })
   public ResponseEntity<Object> handlerUnauthorized(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.UNAUTHORIZED);

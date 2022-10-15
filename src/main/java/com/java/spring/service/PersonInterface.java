@@ -10,4 +10,6 @@ public interface PersonInterface<T, K> {
 
   public List<K> findAll(String token);
 
+  public void deleteById(String token, Long id);
+
 }

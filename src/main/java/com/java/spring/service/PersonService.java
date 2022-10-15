@@ -3,7 +3,9 @@ package com.java.spring.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.dto.PersonDto;
+import com.java.spring.exception.DifferentIdException;
 import com.java.spring.exception.IncorrectCpfLengthException;
 import com.java.spring.exception.IncorrectFullNameLengthException;
 import com.java.spring.exception.PersonAlreadyRegisteredException;
@@ -28,6 +30,8 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
 
   @Autowired
   PersonRepository personRepository;
+
+  GlobalMethodsService global = new GlobalMethodsService();
 
   @Override
   public Person create(PersonDto personDto) {
@@ -68,12 +72,22 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
   @Override
   public List<Person> findAll(String token) {
     try {
-      GlobalMethodsService global = new GlobalMethodsService();
       global.verifyToken(token);
       return personRepository.findAll();
     } catch (JWTVerificationException exception){
       throw new JWTVerificationException("Expired or invalid token");
     }
+  }
+
+  public void deleteById(String token, Long id) {
+      global.verifyToken(token);
+      DecodedJWT decoded = global.verifyToken(token);
+      Optional<Person> isValidPerson = personRepository.findById(id);
+      if (isValidPerson.isEmpty()) throw new PersonNotRegisteredException();
+      Person person = personRepository.findById(id).get();
+      Long numberId = global.returnIdToken(decoded);
+      if (!numberId.equals(id)) throw new DifferentIdException();
+      personRepository.deleteById(person.getId());
   }
 
   public Date localDateNowMoreSeven() {
