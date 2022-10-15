@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.dto.PersonDto;
+import com.java.spring.exception.CpfNotNumericException;
 import com.java.spring.exception.DifferentIdException;
 import com.java.spring.exception.IncorrectCpfLengthException;
 import com.java.spring.exception.IncorrectFullNameLengthException;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -40,12 +43,13 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
       if (findPerson.isPresent()) throw new PersonAlreadyRegisteredException();
       if (personDto.getFullName().length() < 7) throw new IncorrectFullNameLengthException();
       if (personDto.getCpf().length() != 11) throw new IncorrectCpfLengthException();
+      if (!StringUtils.isNumeric(personDto.getCpf())) throw new CpfNotNumericException();
       Person person = new Person();
       person.setFullName(personDto.getFullName());
       person.setCpf(personDto.getCpf());
       return personRepository.save(person);
     } catch(NullPointerException e) {
-        throw new NullPointerException("all values is required");
+      throw new NullPointerException("all values is required");
   	}
   }
 
@@ -79,15 +83,16 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
     }
   }
 
+  @Override
   public void deleteById(String token, Long id) {
-      global.verifyToken(token);
-      DecodedJWT decoded = global.verifyToken(token);
-      Optional<Person> isValidPerson = personRepository.findById(id);
-      if (isValidPerson.isEmpty()) throw new PersonNotRegisteredException();
-      Person person = personRepository.findById(id).get();
-      Long numberId = global.returnIdToken(decoded);
-      if (!numberId.equals(id)) throw new DifferentIdException();
-      personRepository.deleteById(person.getId());
+    global.verifyToken(token);
+    DecodedJWT decoded = global.verifyToken(token);
+    Optional<Person> isValidPerson = personRepository.findById(id);
+    if (isValidPerson.isEmpty()) throw new PersonNotRegisteredException();
+    Person person = personRepository.findById(id).get();
+    Long numberId = global.returnIdToken(decoded);
+    if (!numberId.equals(id)) throw new DifferentIdException();
+    personRepository.deleteById(person.getId());
   }
 
   public Date localDateNowMoreSeven() {

@@ -1,7 +1,6 @@
 package com.java.spring.controller;
 
 import com.java.spring.dto.PersonDto;
-import com.java.spring.exception.TokenNotFoundException;
 import com.java.spring.model.Person;
 import com.java.spring.service.PersonService;
 

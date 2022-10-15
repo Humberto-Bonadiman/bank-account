@@ -18,6 +18,7 @@ public class GlobalExceptions {
       IncorrectEmailFormat.class,
       PasswordLengthException.class,
       WithdrawGreaterThanBalanceException.class,
+      CpfNotNumericException.class
   })
   public ResponseEntity<Object> handlerBadRequest(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.BAD_REQUEST);
