@@ -2,7 +2,6 @@ package com.java.spring.controller;
 
 import com.java.spring.dto.AccountDto;
 import com.java.spring.dto.PasswordDto;
-import com.java.spring.dto.TransferDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.model.Account;
 import com.java.spring.service.AccountService;
@@ -44,7 +43,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     return ResponseEntity.status(HttpStatus.OK).body(accountService.findById(token, id));
   }
 
-  @PatchMapping("/{id}")
+  @PatchMapping("/balance/{id}")
   public ResponseEntity<Account> alterBalanceByAccountId(
     @RequestHeader(value="token", defaultValue = "") String token,
     @PathVariable String id,
@@ -58,7 +57,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     @RequestHeader(value="token", defaultValue = "") String token,
     @PathVariable String idTransfer,
     @PathVariable String idReceiver,
-    @RequestBody TransferDto transferDto
+    @RequestBody ValueDto transferDto
   ) {
     return ResponseEntity.status(HttpStatus.OK)
         .body(accountService.bankTransfer(
@@ -68,6 +67,16 @@ public class AccountController implements AccountControllerInterface<AccountDto,
             transferDto
         )
     );
+  }
+
+  @PatchMapping("/update/{id}")
+  public ResponseEntity<Object> updateAccount(
+    @PathVariable String id,
+    @RequestHeader(value="token", defaultValue = "") String token,
+    @RequestBody AccountDto accountDto
+  ) {
+    accountService.updateAccount(id, token, accountDto);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   @DeleteMapping("/{id}")
