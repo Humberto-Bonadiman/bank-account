@@ -2,14 +2,18 @@ package com.java.spring.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.dto.AccountDto;
+import com.java.spring.dto.ValueDto;
+import com.java.spring.exception.AccountNotFoundException;
 import com.java.spring.exception.IncorrectEmailFormat;
 import com.java.spring.exception.PasswordLengthException;
+import com.java.spring.exception.WithdrawGreaterThanBalanceException;
 import com.java.spring.model.Account;
 import com.java.spring.model.Person;
 import com.java.spring.repository.AccountRepository;
 import com.java.spring.repository.PersonRepository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -58,6 +62,31 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     person.setAccount(newAccount);
     Person savedPerson = personRepository.save(person);
     return savedPerson.getAccount();
+  }
+
+  @Override
+  public Account findById(String token, String id) {
+    global.verifyToken(token);
+    Optional<Account> isValidId = accountRepository.findById(id);
+    if (isValidId.isEmpty()) throw new AccountNotFoundException();
+    return accountRepository.findById(id).get();
+  }
+
+  @Override
+  public Account alterBalanceByAccountId(String token, String id, ValueDto value) {
+    global.verifyToken(token);
+    Optional<Account> isValidId = accountRepository.findById(id);
+    if (isValidId.isEmpty()) throw new AccountNotFoundException();
+    Account account = accountRepository.findById(id).get();
+    System.out.println(account.getAccountBalance());
+    Integer sumValues = account.getAccountBalance() + value.getValue();
+    System.out.println(sumValues);
+    if (sumValues < 0) {
+      throw new WithdrawGreaterThanBalanceException();
+    }
+    account.setAccountBalance(sumValues);
+    accountRepository.save(account);
+    return account;
   }
 
   public void checkIfIsNotNull(AccountDto accountDto) {

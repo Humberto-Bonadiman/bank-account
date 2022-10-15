@@ -17,6 +17,7 @@ public class GlobalExceptions {
       DatetimeConvertionException.class,
       IncorrectEmailFormat.class,
       PasswordLengthException.class,
+      WithdrawGreaterThanBalanceException.class,
   })
   public ResponseEntity<Object> handlerBadRequest(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.BAD_REQUEST);
@@ -35,7 +36,7 @@ public class GlobalExceptions {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.UNAUTHORIZED);
   }
 
-  @ExceptionHandler({PersonNotRegisteredException.class})
+  @ExceptionHandler({PersonNotRegisteredException.class, AccountNotFoundException.class})
   public ResponseEntity<Object> handlerNotFound(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.NOT_FOUND);
   }
