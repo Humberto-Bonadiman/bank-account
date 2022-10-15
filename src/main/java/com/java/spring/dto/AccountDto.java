@@ -20,8 +20,6 @@ public class AccountDto {
 
   private String phoneNumber;
 
-  private Long personId;
-
   public String getEmail() {
     return email;
   }
@@ -92,13 +90,5 @@ public class AccountDto {
 
   public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
-  }
-
-  public Long getPersonId() {
-    return personId;
-  }
-
-  public void setPersonId(Long personId) {
-    this.personId = personId;
   }
 }

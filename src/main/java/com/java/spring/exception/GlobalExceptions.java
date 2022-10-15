@@ -14,6 +14,9 @@ public class GlobalExceptions {
       IncorrectFullNameLengthException.class,
       IncorrectCpfLengthException.class,
       NullPointerException.class,
+      DatetimeConvertionException.class,
+      IncorrectEmailFormat.class,
+      PasswordLengthException.class,
   })
   public ResponseEntity<Object> handlerBadRequest(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.BAD_REQUEST);

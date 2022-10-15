@@ -30,25 +30,28 @@ public class Account {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String passwordAccount;
 
-  @Column
+  @Column(nullable = false)
+  private Integer accountBalance;
+
+  @Column(nullable = false)
   private LocalDate birthDate;
 
-  @Column
+  @Column(nullable = false)
   private String country;
 
-  @Column
+  @Column(nullable = false)
   private String state;
 
-  @Column
+  @Column(nullable = false)
   private String city;
 
-  @Column
+  @Column(nullable = false)
   private String street;
 
-  @Column
+  @Column(nullable = false)
   private String district;
 
-  @Column
+  @Column(nullable = false)
   private String phoneNumber;
 
   @JsonIgnore
@@ -78,6 +81,14 @@ public class Account {
 
   public void setPasswordAccount(String passwordAccount) {
     this.passwordAccount = passwordAccount;
+  }
+
+  public Integer getAccountBalance() {
+    return accountBalance;
+  }
+
+  public void setAccountBalance(Integer accountBalance) {
+    this.accountBalance = accountBalance;
   }
 
   public LocalDate getBirthDate() {
@@ -154,6 +165,7 @@ public class Account {
         email,
         id,
         passwordAccount,
+        accountBalance,
         person,
         phoneNumber,
         state,
@@ -168,6 +180,7 @@ public class Account {
     if (getClass() != obj.getClass()) return false;
     Account other = (Account) obj;
     return Objects.equals(birthDate, other.birthDate)
+        && Objects.equals(accountBalance, other.accountBalance)
         && Objects.equals(city, other.city)
         && Objects.equals(country, other.country)
         && Objects.equals(district, other.district)
@@ -178,7 +191,5 @@ public class Account {
         && Objects.equals(phoneNumber, other.phoneNumber)
         && Objects.equals(state, other.state)
         && Objects.equals(street, other.street);
-}
-
-  
+  }
 }
