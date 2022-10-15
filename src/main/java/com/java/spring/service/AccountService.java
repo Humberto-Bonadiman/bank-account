@@ -2,10 +2,15 @@ package com.java.spring.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.dto.AccountDto;
+import com.java.spring.dto.TransferDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.exception.AccountNotFoundException;
 import com.java.spring.exception.IncorrectEmailFormat;
+import com.java.spring.exception.IncorrectPasswordException;
+import com.java.spring.exception.InsufficientBalanceException;
+import com.java.spring.exception.NegativeValueException;
 import com.java.spring.exception.PasswordLengthException;
+import com.java.spring.exception.ValueDepositException;
 import com.java.spring.exception.WithdrawGreaterThanBalanceException;
 import com.java.spring.model.Account;
 import com.java.spring.model.Person;
@@ -78,15 +83,37 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     Optional<Account> isValidId = accountRepository.findById(id);
     if (isValidId.isEmpty()) throw new AccountNotFoundException();
     Account account = accountRepository.findById(id).get();
-    System.out.println(account.getAccountBalance());
+    if (value.getValue() > 2000) throw new ValueDepositException();
     Integer sumValues = account.getAccountBalance() + value.getValue();
-    System.out.println(sumValues);
     if (sumValues < 0) {
       throw new WithdrawGreaterThanBalanceException();
     }
     account.setAccountBalance(sumValues);
     accountRepository.save(account);
     return account;
+  }
+
+  @Override
+  public String bankTransfer(String idTransfer, String idReceiver, String token, TransferDto transferDto) {
+    if (transferDto.getValue() < 0) throw new NegativeValueException();
+    global.verifyToken(token);
+    Optional<Account> isValidIdTransfer = accountRepository.findById(idTransfer);
+    Optional<Account> isValidIdReceiver = accountRepository.findById(idTransfer);
+    if (isValidIdTransfer.isEmpty()) throw new AccountNotFoundException();
+    if (isValidIdReceiver.isEmpty()) throw new AccountNotFoundException();
+    Account accountTransfer = accountRepository.findById(idTransfer).get();
+    if (!BCrypt.checkpw(transferDto.getPassword(), accountTransfer.getPasswordAccount())) {
+      throw new IncorrectPasswordException();
+    }
+    Account accountReceiver = accountRepository.findById(idReceiver).get();
+    if (accountTransfer.getAccountBalance() < transferDto.getValue()) {
+      throw new InsufficientBalanceException();
+    }
+    accountTransfer.setAccountBalance(accountTransfer.getAccountBalance() - transferDto.getValue());
+    accountReceiver.setAccountBalance(accountReceiver.getAccountBalance() + transferDto.getValue());
+    accountRepository.save(accountTransfer);
+    accountRepository.save(accountReceiver);
+    return "transfer in the amount of " + transferDto.getValue() + " to id account " + idReceiver;
   }
 
   public void checkIfIsNotNull(AccountDto accountDto) {

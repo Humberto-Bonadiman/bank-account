@@ -31,6 +31,10 @@ public class GlobalExceptions {
   @ExceptionHandler({
       JWTVerificationException.class,
       TokenNotFoundException.class,
+      ValueDepositException.class,
+      NegativeValueException.class,
+      InsufficientBalanceException.class,
+      IncorrectPasswordException.class
   })
   public ResponseEntity<Object> handlerUnauthorized(RuntimeException exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.UNAUTHORIZED);

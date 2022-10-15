@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.java.spring.dto.AccountDto;
+import com.java.spring.dto.TransferDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.exception.TokenNotFoundException;
 import com.java.spring.model.Account;
@@ -53,5 +54,23 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   ) {
     if (token == "") throw new TokenNotFoundException();
     return ResponseEntity.status(HttpStatus.OK).body(accountService.alterBalanceByAccountId(token, id, value));
+  }
+
+  @PatchMapping("/{idTransfer}/to/{idReceiver}")
+  public ResponseEntity<String> bankTransfer(
+    @RequestHeader(value="token", defaultValue = "") String token,
+    @PathVariable String idTransfer,
+    @PathVariable String idReceiver,
+    @RequestBody TransferDto transferDto
+  ) {
+    if (token == "") throw new TokenNotFoundException();
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(accountService.bankTransfer(
+            idTransfer,
+            idReceiver,
+            token,
+            transferDto
+        )
+    );
   }
 }
