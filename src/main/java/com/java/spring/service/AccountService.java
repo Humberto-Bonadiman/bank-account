@@ -2,6 +2,7 @@ package com.java.spring.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.dto.AccountDto;
+import com.java.spring.dto.PasswordDto;
 import com.java.spring.dto.TransferDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.exception.AccountNotFoundException;
@@ -114,6 +115,23 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     accountRepository.save(accountTransfer);
     accountRepository.save(accountReceiver);
     return "transfer in the amount of " + transferDto.getValue() + " to id account " + idReceiver;
+  }
+
+  @Override
+  public void delete(String id, String token, PasswordDto password) {
+    try {
+      global.verifyToken(token);
+      Optional<Account> isValidId = accountRepository.findById(id);
+      if (isValidId.isEmpty()) throw new AccountNotFoundException();
+      Account account = accountRepository.findById(id).get();
+      if (!BCrypt.checkpw(password.getPassword(), account.getPasswordAccount())) {
+        throw new IncorrectPasswordException();
+      }
+      accountRepository.deleteById(id);
+    } catch (NullPointerException e) {
+    	throw new NullPointerException("'password' is required");
+    }
+
   }
 
   public void checkIfIsNotNull(AccountDto accountDto) {
