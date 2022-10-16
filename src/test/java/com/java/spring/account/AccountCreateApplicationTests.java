@@ -2,7 +2,6 @@ package com.java.spring.account;
 
 import com.java.spring.dto.AccountDto;
 import com.java.spring.dto.PersonDto;
-import com.java.spring.model.Account;
 import com.java.spring.model.Person;
 import com.java.spring.repository.AccountRepository;
 import com.java.spring.repository.PersonRepository;
