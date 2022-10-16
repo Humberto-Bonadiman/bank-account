@@ -39,7 +39,6 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Override
   public Account create(AccountDto accountDto, String token) {
-    checkIfIsNotNull(accountDto);
     global.verifyToken(token);
     if (!global.isValidEmailAddress(accountDto.getEmail())) {
       throw new IncorrectEmailFormat();
@@ -65,6 +64,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     Person person = personRepository.findById(numberId).get();
     newAccount.setPerson(person);
     person.setAccount(newAccount);
+    checkIfIsNotNull(accountDto);
     Person savedPerson = personRepository.save(person);
     return savedPerson.getAccount();
   }
