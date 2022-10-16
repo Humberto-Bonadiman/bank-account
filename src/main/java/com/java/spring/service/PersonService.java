@@ -60,7 +60,11 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
     }
     Optional<Person> isCpf = personRepository.findByCpf(personDto.getCpf());
     if (isCpf.isEmpty()) throw new PersonNotRegisteredException();
-    Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECRET"));
+    String secret = System.getenv("SECRET");
+    if (secret == null) {
+    	secret = "BH&2&@2f3%#6qPt5B";
+    }
+    Algorithm algorithm = Algorithm.HMAC256(secret);
     Map<String, Object> payloadClaims = new HashMap<>();
     Person personFound = personRepository.findFirstByCpf(personDto.getCpf());
     payloadClaims.put("id", personFound.getId());

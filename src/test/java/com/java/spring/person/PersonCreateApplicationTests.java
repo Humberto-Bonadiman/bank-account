@@ -1,4 +1,4 @@
-package com.java.spring;
+package com.java.spring.person;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,7 +20,7 @@ import com.java.spring.repository.PersonRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PersonApplicationTests {
+class PersonCreateApplicationTests {
 
   @Autowired
   private MockMvc mockMvc;
