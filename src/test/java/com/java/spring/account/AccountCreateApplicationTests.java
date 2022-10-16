@@ -5,7 +5,6 @@ import com.java.spring.dto.PersonDto;
 import com.java.spring.model.Person;
 import com.java.spring.repository.AccountRepository;
 import com.java.spring.repository.PersonRepository;
-import com.java.spring.service.GlobalMethodsService;
 import com.java.spring.service.PersonService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,8 +38,6 @@ class AccountCreateApplicationTests {
 
   @Autowired
   PersonService personService;
-
-  GlobalMethodsService global = new GlobalMethodsService();
 
   @BeforeEach
   void setUp() throws Exception {

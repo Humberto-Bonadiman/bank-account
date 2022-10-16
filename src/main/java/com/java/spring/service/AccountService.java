@@ -98,7 +98,6 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     } catch(NullPointerException e) {
       throw new NullPointerException("all values are required");
     }
-
   }
 
   @Override
