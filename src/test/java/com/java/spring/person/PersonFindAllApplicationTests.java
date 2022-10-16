@@ -31,8 +31,6 @@ class PersonFindAllApplicationTests {
   @Autowired
   PersonService personService;
 
-  GenerateToken generateToken = new GenerateToken();
-
   @BeforeEach
   public void setup() {
     personRepository.deleteAll();
@@ -61,5 +59,21 @@ class PersonFindAllApplicationTests {
         .andExpect(jsonPath("$[0].fullName").value(firstPerson.getFullName()))
         .andExpect(jsonPath("$[1].cpf").value(secondPerson.getCpf()))
         .andExpect(jsonPath("$[1].fullName").value(secondPerson.getFullName()));
+  }
+
+  @Test
+  @Order(2)
+  @DisplayName("2 - throw a error if token is abscent")
+  void throwErrorWithoutToken() throws Exception {
+    mockMvc.perform(get("/person"))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @Order(3)
+  @DisplayName("3 - throw a error if token is invalid")
+  void invalidToken() throws Exception {
+    mockMvc.perform(get("/person").header("token", "abcd1525"))
+      .andExpect(status().isUnauthorized());
   }
 }

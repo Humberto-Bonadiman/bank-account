@@ -22,7 +22,11 @@ public class GlobalMethodsService {
   public DecodedJWT verifyToken(String token) {
     try {
       if (token.equals("")) throw new TokenNotFoundException();
-      Algorithm algorithm = Algorithm.HMAC256(System.getenv("SECRET"));  
+      String secret = System.getenv("SECRET");
+      if (secret == null) {
+      	secret = "BH&2&@2f3%#6qPt5B";
+      }
+      Algorithm algorithm = Algorithm.HMAC256(secret);  
       JWTVerifier verifier = JWT.require(algorithm).build();
       return verifier.verify(token);
     } catch (JWTVerificationException e) {
