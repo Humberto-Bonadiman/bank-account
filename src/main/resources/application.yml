@@ -17,3 +17,4 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+SECRET: "BH&2&@2f3%#6qPt5B"

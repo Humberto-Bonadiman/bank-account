@@ -26,7 +26,7 @@ class PersonCreateApplicationTests {
   private MockMvc mockMvc;
 
   @Autowired
-  private PersonRepository personRepository;
+  PersonRepository personRepository;
 
   @BeforeEach
   public void setup() {
