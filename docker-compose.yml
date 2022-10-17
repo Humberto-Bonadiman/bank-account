@@ -1,7 +1,10 @@
 version: "3.8"
 services:
   bank-account:
-    build: .
+    image: humbertobonadiman/bank-account:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: bank-account
     restart: on-failure
     ports:
