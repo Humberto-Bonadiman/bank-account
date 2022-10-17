@@ -5,6 +5,10 @@ import com.java.spring.dto.PasswordDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.model.Account;
 import com.java.spring.service.AccountService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Account endpoint")
 @CrossOrigin
 @RestController
 @RequestMapping("/account")
@@ -27,6 +32,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   @Autowired
   AccountService accountService;
 
+  @Operation(summary = "Create an account")
   @PostMapping
   public ResponseEntity<Account> create(
     @RequestBody AccountDto accountDto,
@@ -35,6 +41,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     return ResponseEntity.status(HttpStatus.CREATED).body(accountService.create(accountDto, token));
   }
 
+  @Operation(summary = "Find an account by id")
   @GetMapping("/{id}")
   public ResponseEntity<Account> findById(
     @RequestHeader(value="token", defaultValue = "") String token,
@@ -43,6 +50,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     return ResponseEntity.status(HttpStatus.OK).body(accountService.findById(token, id));
   }
 
+  @Operation(summary = "Make withdrawals and deposits to the account by id")
   @PatchMapping("/balance/{id}")
   public ResponseEntity<Account> alterBalanceByAccountId(
     @RequestHeader(value="token", defaultValue = "") String token,
@@ -52,6 +60,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     return ResponseEntity.status(HttpStatus.OK).body(accountService.alterBalanceByAccountId(token, id, value));
   }
 
+  @Operation(summary = "Transfer between accounts by their ids")
   @PatchMapping("/{idTransfer}/to/{idReceiver}")
   public ResponseEntity<String> bankTransfer(
     @RequestHeader(value="token", defaultValue = "") String token,
@@ -69,6 +78,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     );
   }
 
+  @Operation(summary = "Change account data through id")
   @PatchMapping("/update/{id}")
   public ResponseEntity<Object> updateAccount(
     @PathVariable String id,
@@ -79,6 +89,7 @@ public class AccountController implements AccountControllerInterface<AccountDto,
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
+  @Operation(summary = "Delete account data by id")
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> delete(
     @RequestHeader(value="token", defaultValue = "") String token,
