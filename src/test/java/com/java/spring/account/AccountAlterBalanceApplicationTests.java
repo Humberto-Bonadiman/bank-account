@@ -95,8 +95,8 @@ class AccountAlterBalanceApplicationTests {
   
   @Test
   @Order(2)
-  @DisplayName("2 - throw an error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("2 - throws an error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     ValueDto valueDto = new ValueDto();
     valueDto.setPassword("12345678");
     valueDto.setValue(1500);
@@ -108,7 +108,7 @@ class AccountAlterBalanceApplicationTests {
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw an error if token is invalid")
+  @DisplayName("3 - throws an error if token is invalid")
   void invalidToken() throws Exception {
     ValueDto valueDto = new ValueDto();
     valueDto.setPassword("12345678");
@@ -121,7 +121,7 @@ class AccountAlterBalanceApplicationTests {
 
   @Test
   @Order(4)
-  @DisplayName("4 - throw an error if id is invalid")
+  @DisplayName("4 - throws an error if id is invalid")
   void invalidId() throws Exception {
     final Person person = new Person();
     person.setCpf("12345678901");
@@ -142,7 +142,7 @@ class AccountAlterBalanceApplicationTests {
 
   @Test
   @Order(5)
-  @DisplayName("5 - throw an error if password is invalid")
+  @DisplayName("5 - throws an error if password is invalid")
   void invalidPassword() throws Exception {
     final Person person = new Person();
     person.setCpf("12345678901");
@@ -179,7 +179,7 @@ class AccountAlterBalanceApplicationTests {
 
   @Test
   @Order(5)
-  @DisplayName("5 - throw an error if value greater than 2000")
+  @DisplayName("5 - throws an error if value greater than 2000")
   void valueGreaterThanAllowed() throws Exception {
     final Person person = new Person();
     person.setCpf("12345678901");

@@ -156,7 +156,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       }
       accountRepository.deleteById(id);
     } catch (NullPointerException e) {
-    	throw new NullPointerException("'password' is required");
+      throw new NullPointerException("'password' is required");
     }
 
   }

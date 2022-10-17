@@ -100,8 +100,8 @@ class AccountUpdateApplicationTests {
 
   @Test
   @Order(2)
-  @DisplayName("2 - throw an error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("2 - throws an error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     AccountDto newAccount = new AccountDto();
     mockMvc
         .perform(patch("/account/update/1bfiel3l9c")
@@ -112,7 +112,7 @@ class AccountUpdateApplicationTests {
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw an error if token is invalid")
+  @DisplayName("3 - throws an error if token is invalid")
   void invalidToken() throws Exception {
     AccountDto newAccount = new AccountDto();
     mockMvc

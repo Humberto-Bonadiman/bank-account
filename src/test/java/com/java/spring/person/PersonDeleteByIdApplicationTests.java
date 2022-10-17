@@ -53,15 +53,15 @@ class PersonDeleteByIdApplicationTests {
 
   @Test
   @Order(2)
-  @DisplayName("2 - throw an error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("2 - throws an error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     mockMvc.perform(delete("/person/10"))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw an error if token is invalid")
+  @DisplayName("3 - throws an error if token is invalid")
   void invalidToken() throws Exception {
     mockMvc.perform(delete("/person/10").header("token", "abcd1525"))
       .andExpect(status().isUnauthorized());
@@ -69,7 +69,7 @@ class PersonDeleteByIdApplicationTests {
 
   @Test
   @Order(4)
-  @DisplayName("4 - throw an error if id is invalid")
+  @DisplayName("4 - throws an error if id is invalid")
   void invalidId() throws Exception {
     final Person person = new Person();
     person.setCpf("12345678901");

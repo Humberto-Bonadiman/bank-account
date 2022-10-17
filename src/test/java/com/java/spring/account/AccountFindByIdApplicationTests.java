@@ -84,8 +84,8 @@ class AccountFindByIdApplicationTests {
 
   @Test
   @Order(2)
-  @DisplayName("2 - throw an error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("2 - throws an error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     Account account = new Account();
     mockMvc.perform(get("/account/" + account.getId())
         .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ class AccountFindByIdApplicationTests {
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw an error if token is invalid")
+  @DisplayName("3 - throws an error if token is invalid")
   void invalidToken() throws Exception {
     Account account = new Account();
     mockMvc.perform(get("/account/" + account.getId()).header("token", "abcd1525")
@@ -107,7 +107,7 @@ class AccountFindByIdApplicationTests {
   
   @Test
   @Order(4)
-  @DisplayName("4 - throw an error if id not exist")
+  @DisplayName("4 - throws an error if id not exist")
   void idNotFound() throws Exception {
     final Person person = new Person();
     person.setCpf("12345678901");

@@ -133,8 +133,8 @@ class AccountTransferApplicationTests {
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw an error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("3 - throws an error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     ValueDto transfer = new ValueDto();
     transfer.setPassword("12345678");
     transfer.setValue(1000);
@@ -147,7 +147,7 @@ class AccountTransferApplicationTests {
 
   @Test
   @Order(4)
-  @DisplayName("4 - throw an error if token is invalid")
+  @DisplayName("4 - throws an error if token is invalid")
   void invalidToken() throws Exception {
     ValueDto transfer = new ValueDto();
     transfer.setPassword("12345678");
@@ -185,7 +185,7 @@ class AccountTransferApplicationTests {
 
   @Test
   @Order(6)
-  @DisplayName("6 - throw an error with wrong password")
+  @DisplayName("6 - throws an error with wrong password")
   void wrongPassword() throws Exception {
     Person person = new Person();
     person.setCpf("12345678901");

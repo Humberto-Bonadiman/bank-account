@@ -63,15 +63,15 @@ class PersonFindAllApplicationTests {
 
   @Test
   @Order(2)
-  @DisplayName("2 - throw a error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("2 - throws a error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     mockMvc.perform(get("/person"))
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw a error if token is invalid")
+  @DisplayName("3 - throws a error if token is invalid")
   void invalidToken() throws Exception {
     mockMvc.perform(get("/person").header("token", "abcd1525"))
       .andExpect(status().isUnauthorized());

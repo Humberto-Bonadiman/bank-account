@@ -76,8 +76,8 @@ class AccountCreateApplicationTests {
 
   @Test
   @Order(2)
-  @DisplayName("2 - throw an error if token is abscent")
-  void throwErrorWithoutToken() throws Exception {
+  @DisplayName("2 - throws an error if token is abscent")
+  void throwsErrorWithoutToken() throws Exception {
     AccountDto account = new AccountDto();
     mockMvc.perform(post("/account")
         .contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +87,7 @@ class AccountCreateApplicationTests {
 
   @Test
   @Order(3)
-  @DisplayName("3 - throw an error if token is invalid")
+  @DisplayName("3 - throws an error if token is invalid")
   void invalidToken() throws Exception {
     AccountDto account = new AccountDto();
     mockMvc.perform(post("/account").header("token", "abcd1525")
