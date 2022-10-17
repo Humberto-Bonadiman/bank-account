@@ -125,25 +125,23 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Override
   public void updateAccount(String id, String token, AccountDto accountDto) {
-    try {
-      global.verifyToken(token);
-      checkIfIsNotNull(accountDto);
-      Account account = accountRepository.findById(id).get();
-      account.setEmail(accountDto.getEmail());
-      String pw_hash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
-      account.setPasswordAccount(pw_hash);
-      LocalDate localDate = global.convertDate(accountDto.getBirthDate());
-      account.setBirthDate(localDate);
-      account.setCountry(accountDto.getCountry());
-      account.setState(accountDto.getState());
-      account.setCity(accountDto.getCity());
-      account.setDistrict(accountDto.getDistrict());
-      account.setStreet(accountDto.getStreet());
-      account.setPhoneNumber(accountDto.getPhoneNumber());
-      accountRepository.save(account);
-    } catch (AccountNotFoundException e) {
-      throw new AccountNotFoundException();
-    }
+    global.verifyToken(token);
+    Optional<Account> isValidId = accountRepository.findById(id);
+    if (isValidId.isEmpty()) throw new AccountNotFoundException();
+    Account account = accountRepository.findById(id).get();
+    account.setEmail(accountDto.getEmail());
+    String pw_hash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
+    account.setPasswordAccount(pw_hash);
+    LocalDate localDate = global.convertDate(accountDto.getBirthDate());
+    account.setBirthDate(localDate);
+    account.setCountry(accountDto.getCountry());
+    account.setState(accountDto.getState());
+    account.setCity(accountDto.getCity());
+    account.setDistrict(accountDto.getDistrict());
+    account.setStreet(accountDto.getStreet());
+    account.setPhoneNumber(accountDto.getPhoneNumber());
+    checkIfIsNotNull(accountDto);
+    accountRepository.save(account);
   }
 
   @Override
