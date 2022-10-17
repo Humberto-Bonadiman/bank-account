@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   bank-account:
-    image: humbertobonadiman/bank-account:latest
+    image: humbertobonadiman/bank-account:1.0.0
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
       SPRING_APPLICATION_JSON: '{
         "spring.datasource.url" : "jdbc:mysql://mysqldb:3306/bank_account?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false",
         "spring.datasource.username" : "root",
-        "spring.datasource.password" : "1234",
+        "spring.datasource.password" : "sua_senha_aqui",
         "spring.datasource.driver-class-name" : "com.mysql.cj.jdbc.Driver",
         "spring.jpa.hibernate.ddl-auto" : "update",
         "spring.jpa.show-sql" : "true",
@@ -35,7 +35,7 @@ services:
     networks:
       - bank-account-net
     environment:
-      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=sua_senha_aqui
       - MYSQL_DATABASE=bank-account
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]

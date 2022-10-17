@@ -37,7 +37,7 @@ Para realizar a criação e a leitura do token você pode utilizar o seguinte co
 ```javascript
 export SECRET=sua_chave_vai_aqui
 ```
-Não é um comando obrigatório pois a aplicação já roda sem a SECRET, porém é sempre indicado cria-lá.
+Não é um comando obrigatório pois a aplicação já roda sem a SECRET, porém é sempre indicado criá-la.
 
 ## Comandos para utilizar o Docker
 
