@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   bank-account:
-    image: humbertobonadiman/bank-account:1.0.0
+    image: humbertobonadiman/bank-account:latest
     build:
       context: .
       dockerfile: Dockerfile
