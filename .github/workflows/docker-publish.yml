@@ -24,7 +24,7 @@ jobs:
          java-version: '11'
          distribution: 'adopt'
 
-      - name: Clinica Container Jar
+      - name: Bank Account Container Jar
         working-directory: .
         run: mvn spring-boot:build-image -DskipTests
 
