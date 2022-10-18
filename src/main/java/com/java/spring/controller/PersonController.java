@@ -46,7 +46,7 @@ public class PersonController implements PersonControllerInterface<PersonDto, Pe
   @Operation(summary = "List all registered people")
   @GetMapping
   public ResponseEntity<List<Person>> findAll(
-      @RequestHeader(value="token", defaultValue = "") String token
+      @RequestHeader(value = "token", defaultValue = "") String token
   ) {
     return ResponseEntity.status(HttpStatus.OK).body(personService.findAll(token));
   }
@@ -54,10 +54,10 @@ public class PersonController implements PersonControllerInterface<PersonDto, Pe
   @Operation(summary = "Delete person data by id")
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> deleteById(
-    @RequestHeader(value="token", defaultValue = "") String token,
-    @PathVariable Long id
+      @RequestHeader(value = "token", defaultValue = "") String token,
+      @PathVariable Long id
   ) {
     personService.deleteById(token, id);
-	return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 }

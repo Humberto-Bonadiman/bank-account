@@ -40,29 +40,39 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
   public Person create(PersonDto personDto) {
     try {
       Optional<Person> findPerson = personRepository.findByCpf(personDto.getCpf());
-      if (findPerson.isPresent()) throw new PersonAlreadyRegisteredException();
-      if (personDto.getFullName().length() < 7) throw new IncorrectFullNameLengthException();
-      if (personDto.getCpf().length() != 11) throw new IncorrectCpfLengthException();
-      if (!StringUtils.isNumeric(personDto.getCpf())) throw new CpfNotNumericException();
+      if (findPerson.isPresent()) {
+        throw new PersonAlreadyRegisteredException();
+      }
+      if (personDto.getFullName().length() < 7) {
+        throw new IncorrectFullNameLengthException();
+      }
+      if (personDto.getCpf().length() != 11) {
+        throw new IncorrectCpfLengthException();
+      }
+      if (!StringUtils.isNumeric(personDto.getCpf())) {
+        throw new CpfNotNumericException();
+      }
       Person person = new Person();
       person.setFullName(personDto.getFullName());
       person.setCpf(personDto.getCpf());
       return personRepository.save(person);
-    } catch(NullPointerException e) {
+    } catch (NullPointerException e) {
       throw new NullPointerException("all values is required");
-  	}
+    }
   }
 
   @Override
   public String generateToken(PersonDto personDto) {
     if (personDto.getFullName() == null || personDto.getCpf() == null) {
-       throw new NullPointerException("all values is required");
+      throw new NullPointerException("all values is required");
     }
     Optional<Person> isCpf = personRepository.findByCpf(personDto.getCpf());
-    if (isCpf.isEmpty()) throw new PersonNotRegisteredException();
+    if (isCpf.isEmpty()) {
+      throw new PersonNotRegisteredException();
+    }
     String secret = System.getenv("SECRET");
     if (secret == null) {
-    	secret = "BH&2&@2f3%#6qPt5B";
+      secret = "BH&2&@2f3%#6qPt5B";
     }
     Algorithm algorithm = Algorithm.HMAC256(secret);
     Map<String, Object> payloadClaims = new HashMap<>();
@@ -82,7 +92,7 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
     try {
       global.verifyToken(token);
       return personRepository.findAll();
-    } catch (JWTVerificationException exception){
+    } catch (JWTVerificationException exception) {
       throw new JWTVerificationException("Expired or invalid token");
     }
   }
@@ -92,13 +102,20 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
     global.verifyToken(token);
     DecodedJWT decoded = global.verifyToken(token);
     Optional<Person> isValidPerson = personRepository.findById(id);
-    if (isValidPerson.isEmpty()) throw new PersonNotRegisteredException();
+    if (isValidPerson.isEmpty()) {
+      throw new PersonNotRegisteredException();
+    }
     Person person = personRepository.findById(id).get();
     Long numberId = global.returnIdToken(decoded);
-    if (!numberId.equals(id)) throw new DifferentIdException();
+    if (!numberId.equals(id)) {
+      throw new DifferentIdException();
+    }
     personRepository.deleteById(person.getId());
   }
 
+  /**
+   * Add more seven days for date.
+   */
   public Date localDateNowMoreSeven() {
     LocalDate todayMoreSeven =  LocalDate.now().plusDays(7);
     Date date = Date.from(todayMoreSeven.atStartOfDay(ZoneId.systemDefault()).toInstant());

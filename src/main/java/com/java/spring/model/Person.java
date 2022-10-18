@@ -26,7 +26,8 @@ public class Person {
   @Column(nullable = false)
   private String cpf;
 
-  @OneToOne(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToOne(
+      mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private Account account;
 
   public Long getId() {
@@ -68,9 +69,15 @@ public class Person {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     Person other = (Person) obj;
     return Objects.equals(cpf, other.cpf)
         && Objects.equals(fullName, other.fullName)

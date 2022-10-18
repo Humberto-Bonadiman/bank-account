@@ -19,12 +19,17 @@ import org.apache.commons.validator.routines.EmailValidator;
 
 public class GlobalMethodsService {
 
+  /**
+   * verify if is a valid token.
+   */
   public DecodedJWT verifyToken(String token) {
     try {
-      if (token.equals("")) throw new TokenNotFoundException();
+      if (token.equals("")) {
+        throw new TokenNotFoundException();
+      }
       String secret = System.getenv("SECRET");
       if (secret == null) {
-      	secret = "BH&2&@2f3%#6qPt5B";
+        secret = "BH&2&@2f3%#6qPt5B";
       }
       Algorithm algorithm = Algorithm.HMAC256(secret);  
       JWTVerifier verifier = JWT.require(algorithm).build();
@@ -35,6 +40,9 @@ public class GlobalMethodsService {
 
   }
 
+  /**
+   * get the id in token.
+   */
   public Long returnIdToken(DecodedJWT decoded) {
     String encPayload = decoded.getPayload();
     String payload = decode(encPayload);
@@ -49,6 +57,9 @@ public class GlobalMethodsService {
     return StringUtils.newStringUtf8(Base64.decodeBase64(base64));
   }
 
+  /**
+   * convert string to LocalDate.
+   */
   public LocalDate convertDate(String date) {
     try {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
@@ -59,18 +70,31 @@ public class GlobalMethodsService {
     }
   }
 
+  /**
+   * check if is a valid email.
+   */
   public boolean isValidEmailAddress(String email) {
     boolean valid = EmailValidator.getInstance().isValid(email);
     return valid;
   }
 
+  /**
+   * check the length of password.
+   */
   public boolean isValidPasswordLength(String password) {
-    if(password.length() >= 6) return true;
+    if (password.length() >= 6) {
+      return true;
+    }
     return false;
   }
 
+  /**
+   * check the length of fullName.
+   */
   public boolean isValidFullNameLength(String fullName) {
-    if (fullName.length() >= 8) return true;
+    if (fullName.length() >= 8) {
+      return true;
+    }
     return false;
   }
 }

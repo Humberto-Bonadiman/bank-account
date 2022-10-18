@@ -175,9 +175,15 @@ public class Account {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
     Account other = (Account) obj;
     return Objects.equals(birthDate, other.birthDate)
         && Objects.equals(accountBalance, other.accountBalance)

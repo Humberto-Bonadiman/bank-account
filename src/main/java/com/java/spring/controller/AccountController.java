@@ -35,8 +35,8 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   @Operation(summary = "Create an account")
   @PostMapping
   public ResponseEntity<Account> create(
-    @RequestBody AccountDto accountDto,
-    @RequestHeader(value="token", defaultValue = "") String token
+      @RequestBody AccountDto accountDto,
+      @RequestHeader(value = "token", defaultValue = "") String token
   ) {
     return ResponseEntity.status(HttpStatus.CREATED).body(accountService.create(accountDto, token));
   }
@@ -44,8 +44,8 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   @Operation(summary = "Find an account by id")
   @GetMapping("/{id}")
   public ResponseEntity<Account> findById(
-    @RequestHeader(value="token", defaultValue = "") String token,
-    @PathVariable String id
+      @RequestHeader(value = "token", defaultValue = "") String token,
+      @PathVariable String id
   ) {
     return ResponseEntity.status(HttpStatus.OK).body(accountService.findById(token, id));
   }
@@ -53,20 +53,24 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   @Operation(summary = "Make withdrawals and deposits to the account by id")
   @PatchMapping("/balance/{id}")
   public ResponseEntity<Account> alterBalanceByAccountId(
-    @RequestHeader(value="token", defaultValue = "") String token,
-    @PathVariable String id,
-    @RequestBody ValueDto value
+      @RequestHeader(value = "token", defaultValue = "") String token,
+      @PathVariable String id,
+      @RequestBody ValueDto value
   ) {
-    return ResponseEntity.status(HttpStatus.OK).body(accountService.alterBalanceByAccountId(token, id, value));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(accountService.alterBalanceByAccountId(token, id, value));
   }
 
+  /**
+   * bank transfer controller.
+   */
   @Operation(summary = "Transfer between accounts by their ids")
   @PatchMapping("/{idTransfer}/to/{idReceiver}")
   public ResponseEntity<String> bankTransfer(
-    @RequestHeader(value="token", defaultValue = "") String token,
-    @PathVariable String idTransfer,
-    @PathVariable String idReceiver,
-    @RequestBody ValueDto transferDto
+      @RequestHeader(value = "token", defaultValue = "") String token,
+      @PathVariable String idTransfer,
+      @PathVariable String idReceiver,
+      @RequestBody ValueDto transferDto
   ) {
     return ResponseEntity.status(HttpStatus.OK)
         .body(accountService.bankTransfer(
@@ -81,9 +85,9 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   @Operation(summary = "Change account data through id")
   @PatchMapping("/update/{id}")
   public ResponseEntity<Object> updateAccount(
-    @PathVariable String id,
-    @RequestHeader(value="token", defaultValue = "") String token,
-    @RequestBody AccountDto accountDto
+      @PathVariable String id,
+      @RequestHeader(value = "token", defaultValue = "") String token,
+      @RequestBody AccountDto accountDto
   ) {
     accountService.updateAccount(id, token, accountDto);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -92,9 +96,9 @@ public class AccountController implements AccountControllerInterface<AccountDto,
   @Operation(summary = "Delete account data by id")
   @DeleteMapping("/{id}")
   public ResponseEntity<Object> delete(
-    @RequestHeader(value="token", defaultValue = "") String token,
-    @PathVariable String id,
-    @RequestBody PasswordDto password
+      @RequestHeader(value = "token", defaultValue = "") String token,
+      @PathVariable String id,
+      @RequestBody PasswordDto password
   ) {
     accountService.delete(id, token, password);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
