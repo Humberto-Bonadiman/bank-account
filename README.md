@@ -73,8 +73,7 @@ Primeiramente, ative o MySQL:
 ```javascript
 sudo service mysql start
 ```
-No arquivo que está no caminho **/src/main/resources/application.yml** você deve alterar os campos **spring.datasource.username** e **spring.datasource.password** conforme os dados de username e password do seu MySQL.
-Após altere o arquivo application.properties que está localizado no seguinte caminho /src/main/resources/application.yml. Nele você deve alterar a 7ª(username) e a 8ª(password) linha com o usuário e senha do seu MySQL:
+No arquivo que está no caminho **/src/main/resources/application.yml** você deve alterar a 7ª(username) e a 8ª(password) linha com o usuário e senha do seu MySQL:
 ```javascript
 spring:
   datasource:
