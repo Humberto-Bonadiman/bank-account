@@ -29,6 +29,11 @@ git clone git@github.com:humberto-bonadiman/bank-account.git
   mvn install
 ```
 
+3. Após empacote o código compilado com o comando **mvn package**:
+```javascript
+mvn package
+```
+
 ## Adicionando o SECRET
 
 Para realizar a criação e a leitura do token você pode utilizar o seguinte comando:
