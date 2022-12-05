@@ -5,11 +5,9 @@ import com.java.spring.dto.AccountDto;
 import com.java.spring.dto.PasswordDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.exception.AccountNotFoundException;
-import com.java.spring.exception.IncorrectEmailFormat;
 import com.java.spring.exception.IncorrectPasswordException;
 import com.java.spring.exception.InsufficientBalanceException;
 import com.java.spring.exception.NegativeValueException;
-import com.java.spring.exception.PasswordLengthException;
 import com.java.spring.exception.ValueDepositException;
 import com.java.spring.exception.WithdrawGreaterThanBalanceException;
 import com.java.spring.model.Account;
@@ -35,17 +33,11 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   @Autowired
   PersonRepository personRepository;
 
-  GlobalMethodsService global = new GlobalMethodsService();
-
   @Override
   public Account create(AccountDto accountDto, String token) {
     DecodedJWT decoded = GlobalMethodsService.verifyToken(token);
-    if (!GlobalMethodsService.isValidEmailAddress(accountDto.getEmail())) {
-      throw new IncorrectEmailFormat();
-    }
-    if (!GlobalMethodsService.isValidPasswordLength(accountDto.getPasswordAccount())) {
-      throw new PasswordLengthException();
-    }
+    GlobalMethodsService.isValidEmailAddress(accountDto.getEmail());
+    GlobalMethodsService.isValidPasswordLength(accountDto.getPasswordAccount());
     Long numberId = GlobalMethodsService.returnIdToken(decoded);
     String pwHash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
     LocalDate localDate = GlobalMethodsService.convertDate(accountDto.getBirthDate());
@@ -61,11 +53,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   @Override
   public Account findById(String token, String id) {
     GlobalMethodsService.verifyToken(token);
-    Optional<Account> isValidId = accountRepository.findById(id);
-    if (isValidId.isEmpty()) {
-      throw new AccountNotFoundException();
-    }
-    return accountRepository.findById(id).get();
+    return findByIdOrThrowError(id);
   }
 
   @Override
@@ -73,11 +61,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       String token, String id, ValueDto value) {
     try {
       GlobalMethodsService.verifyToken(token);
-      Optional<Account> isValidId = accountRepository.findById(id);
-      if (isValidId.isEmpty()) {
-        throw new AccountNotFoundException();
-      }
-      Account account = accountRepository.findById(id).get();
+      Account account = findByIdOrThrowError(id);
       if (!BCrypt.checkpw(value.getPassword(), account.getPasswordAccount())) {
         throw new IncorrectPasswordException();
       }
@@ -103,20 +87,12 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       throw new NegativeValueException();
     }
     GlobalMethodsService.verifyToken(token);
-    Optional<Account> isValidIdTransfer = accountRepository.findById(idTransfer);
-    Optional<Account> isValidIdReceiver = accountRepository.findById(idTransfer);
-    if (isValidIdTransfer.isEmpty() || isValidIdReceiver.isEmpty()) {
-      throw new AccountNotFoundException();
-    }
-    Account accountTransfer = accountRepository.findById(idTransfer).get();
-    if (!BCrypt.checkpw(
-        valueDto.getPassword(), accountTransfer.getPasswordAccount())) {
-      throw new IncorrectPasswordException();
-    }
-    Account accountReceiver = accountRepository.findById(idReceiver).get();
+    Account accountTransfer = findByIdOrThrowError(idTransfer);
+    checkBcryptPassword(valueDto.getPassword(), accountTransfer.getPasswordAccount());
     if (accountTransfer.getAccountBalance() < valueDto.getValue()) {
       throw new InsufficientBalanceException();
     }
+    Account accountReceiver = findByIdOrThrowError(idReceiver);
     accountTransfer.setAccountBalance(accountTransfer.getAccountBalance() - valueDto.getValue());
     accountReceiver.setAccountBalance(accountReceiver.getAccountBalance() + valueDto.getValue());
     accountRepository.save(accountTransfer);
@@ -127,11 +103,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   @Override
   public void updateAccount(String id, String token, AccountDto accountDto) {
     GlobalMethodsService.verifyToken(token);
-    Optional<Account> isValidId = accountRepository.findById(id);
-    if (isValidId.isEmpty()) {
-      throw new AccountNotFoundException();
-    }
-    Account account = accountRepository.findById(id).get();
+    Account account = findByIdOrThrowError(id);
     account.setEmail(accountDto.getEmail());
     String pwHash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
     account.setPasswordAccount(pwHash);
@@ -151,14 +123,8 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   public void delete(String id, String token, PasswordDto password) {
     try {
       GlobalMethodsService.verifyToken(token);
-      Optional<Account> isValidId = accountRepository.findById(id);
-      if (isValidId.isEmpty()) {
-        throw new AccountNotFoundException();
-      }
-      Account account = accountRepository.findById(id).get();
-      if (!BCrypt.checkpw(password.getPassword(), account.getPasswordAccount())) {
-        throw new IncorrectPasswordException();
-      }
+      Account account = findByIdOrThrowError(id);
+      checkBcryptPassword(password.getPassword(), account.getPasswordAccount());
       accountRepository.deleteById(id);
     } catch (NullPointerException e) {
       throw new NullPointerException("'password' is required");
@@ -182,6 +148,20 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       String firstPart = "the values email, passwordAccount, birthDate, country, state";
       String secondPart = ", city, street, district, phoneNumber";
       throw new NullPointerException(firstPart + secondPart + " are required");
+    }
+  }
+
+  private Account findByIdOrThrowError(String id) {
+    Optional<Account> validAccount = accountRepository.findById(id);
+    if (validAccount.isEmpty()) {
+      throw new AccountNotFoundException();
+    }
+    return validAccount.get();
+  }
+
+  private void checkBcryptPassword(String passwordDatabase, String password) {
+    if (!BCrypt.checkpw(passwordDatabase, password)) {
+      throw new IncorrectPasswordException();
     }
   }
 }

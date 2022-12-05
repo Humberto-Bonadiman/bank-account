@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.exception.DatetimeConvertionException;
+import com.java.spring.exception.IncorrectEmailFormat;
+import com.java.spring.exception.PasswordLengthException;
 import com.java.spring.exception.TokenNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -80,15 +82,19 @@ public class GlobalMethodsService {
   /**
    * check if is a valid email.
    */
-  public static boolean isValidEmailAddress(String email) {
-    return EmailValidator.getInstance().isValid(email);
+  public static void isValidEmailAddress(String email) {
+    if (!EmailValidator.getInstance().isValid(email)) {
+      throw new IncorrectEmailFormat();
+    }
   }
 
   /**
    * check the length of password.
    */
-  public static boolean isValidPasswordLength(String password) {
-    return password.length() >= 6;
+  public static void isValidPasswordLength(String password) {
+    if (password.length() < 6) {
+      throw new PasswordLengthException();
+    }
   }
 
   /**

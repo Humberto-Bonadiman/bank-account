@@ -104,18 +104,11 @@ public class PersonService implements PersonInterface {
   /**
    * Add more seven days for date.
    */
-  public Date localDateNowMoreSeven() {
+  private Date localDateNowMoreSeven() {
     LocalDate todayMoreSeven =  LocalDate.now().plusDays(7);
     Date date = Date.from(todayMoreSeven.atStartOfDay(ZoneId.systemDefault()).toInstant());
     return date;
-  }
-
-  /**
-   *     public Estudante buscarEstudantePeloNome(String nome) {
-        return estudanteRepository.findByNome(nome)
-            .orElseThrow(() -> throw new PersonNotRegisteredException());
-    }
-   */  
+  }  
 
   private Optional<Person> findByCpf(String cpf) {
     return personRepository.findByCpf(cpf);
