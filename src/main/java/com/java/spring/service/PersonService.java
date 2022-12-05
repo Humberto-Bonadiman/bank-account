@@ -29,17 +29,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Component
-public class PersonService implements PersonInterface<PersonDto, Person> {
+public class PersonService implements PersonInterface {
 
   @Autowired
   PersonRepository personRepository;
 
-  GlobalMethodsService global = new GlobalMethodsService();
-
   @Override
   public Person create(PersonDto personDto) {
     try {
-      Optional<Person> findPerson = personRepository.findByCpf(personDto.getCpf());
+      Optional<Person> findPerson = findByCpf(personDto.getCpf());
       if (findPerson.isPresent()) {
         throw new PersonAlreadyRegisteredException();
       }
@@ -52,9 +50,7 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
       if (!StringUtils.isNumeric(personDto.getCpf())) {
         throw new CpfNotNumericException();
       }
-      Person person = new Person();
-      person.setFullName(personDto.getFullName());
-      person.setCpf(personDto.getCpf());
+      Person person = new Person(personDto.getFullName(), personDto.getCpf());
       return personRepository.save(person);
     } catch (NullPointerException e) {
       throw new NullPointerException("all values is required");
@@ -66,17 +62,14 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
     if (personDto.getFullName() == null || personDto.getCpf() == null) {
       throw new NullPointerException("all values is required");
     }
-    Optional<Person> isCpf = personRepository.findByCpf(personDto.getCpf());
-    if (isCpf.isEmpty()) {
+    Optional<Person> findCpf = findByCpf(personDto.getCpf());
+    if (findCpf.isEmpty()) {
       throw new PersonNotRegisteredException();
     }
-    String secret = System.getenv("SECRET");
-    if (secret == null) {
-      secret = "BH&2&@2f3%#6qPt5B";
-    }
+    String secret = GlobalMethodsService.getSecret();
     Algorithm algorithm = Algorithm.HMAC256(secret);
+    Person personFound = findCpf.get();
     Map<String, Object> payloadClaims = new HashMap<>();
-    Person personFound = personRepository.findFirstByCpf(personDto.getCpf());
     payloadClaims.put("id", personFound.getId());
     payloadClaims.put("fullName", personFound.getFullName());
     payloadClaims.put("cpf", personFound.getCpf());
@@ -90,7 +83,7 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
   @Override
   public List<Person> findAll(String token) {
     try {
-      global.verifyToken(token);
+      GlobalMethodsService.verifyToken(token);
       return personRepository.findAll();
     } catch (JWTVerificationException exception) {
       throw new JWTVerificationException("Expired or invalid token");
@@ -99,14 +92,9 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
 
   @Override
   public void deleteById(String token, Long id) {
-    global.verifyToken(token);
-    DecodedJWT decoded = global.verifyToken(token);
-    Optional<Person> isValidPerson = personRepository.findById(id);
-    if (isValidPerson.isEmpty()) {
-      throw new PersonNotRegisteredException();
-    }
-    Person person = personRepository.findById(id).get();
-    Long numberId = global.returnIdToken(decoded);
+    DecodedJWT decoded = GlobalMethodsService.verifyToken(token);
+    Person person = findById(id);
+    Long numberId = GlobalMethodsService.returnIdToken(decoded);
     if (!numberId.equals(id)) {
       throw new DifferentIdException();
     }
@@ -120,6 +108,24 @@ public class PersonService implements PersonInterface<PersonDto, Person> {
     LocalDate todayMoreSeven =  LocalDate.now().plusDays(7);
     Date date = Date.from(todayMoreSeven.atStartOfDay(ZoneId.systemDefault()).toInstant());
     return date;
-  } 
+  }
 
+  /**
+   *     public Estudante buscarEstudantePeloNome(String nome) {
+        return estudanteRepository.findByNome(nome)
+            .orElseThrow(() -> throw new PersonNotRegisteredException());
+    }
+   */  
+
+  private Optional<Person> findByCpf(String cpf) {
+    return personRepository.findByCpf(cpf);
+  }
+
+  private Person findById(Long id) {
+    Optional<Person> validPerson = personRepository.findById(id);
+    if (validPerson.isEmpty()) {
+      throw new PersonNotRegisteredException();
+    }
+    return validPerson.get();
+  }
 }

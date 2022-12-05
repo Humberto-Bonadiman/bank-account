@@ -1,14 +1,16 @@
 package com.java.spring.service;
 
+import com.java.spring.dto.PersonDto;
+import com.java.spring.model.Person;
 import java.util.List;
 
-public interface PersonInterface<T, K> {
+public interface PersonInterface {
 
-  public K create(T object);
+  public Person create(PersonDto personDto);
 
-  public String generateToken(T object);
+  public String generateToken(PersonDto personDto);
 
-  public List<K> findAll(String token);
+  public List<Person> findAll(String token);
 
   public void deleteById(String token, Long id);
 

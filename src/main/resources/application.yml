@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/bank_account?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: sua_senha_aqui
+    password: 1234
   jackson:
     default-property-inclusion: NON_NULL
     serialization:

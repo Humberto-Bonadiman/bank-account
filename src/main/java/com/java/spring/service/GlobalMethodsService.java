@@ -7,30 +7,26 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.java.spring.exception.DatetimeConvertionException;
 import com.java.spring.exception.TokenNotFoundException;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-// import org.springframework.stereotype.Service;
 import org.apache.commons.validator.routines.EmailValidator;
 
 public class GlobalMethodsService {
 
+  private static final String secretDefault = "BH&2&@2f3%#6qPt5B";
+
   /**
    * verify if is a valid token.
    */
-  public DecodedJWT verifyToken(String token) {
+  public static DecodedJWT verifyToken(String token) {
     try {
-      if (token.equals("")) {
+      if ("".equals(token)) {
         throw new TokenNotFoundException();
       }
-      String secret = System.getenv("SECRET");
-      if (secret == null) {
-        secret = "BH&2&@2f3%#6qPt5B";
-      }
+      String secret = getSecret();
       Algorithm algorithm = Algorithm.HMAC256(secret);  
       JWTVerifier verifier = JWT.require(algorithm).build();
       return verifier.verify(token);
@@ -43,7 +39,7 @@ public class GlobalMethodsService {
   /**
    * get the id in token.
    */
-  public Long returnIdToken(DecodedJWT decoded) {
+  public static Long returnIdToken(DecodedJWT decoded) {
     String encPayload = decoded.getPayload();
     String payload = decode(encPayload);
     String firstPartPayload = payload.substring(payload.indexOf("id"));
@@ -53,14 +49,14 @@ public class GlobalMethodsService {
         secondPartPayload.substring(0, secondPartPayload.indexOf(","))); 
   }
 
-  public String decode(final String base64) {
+  public static String decode(final String base64) {
     return StringUtils.newStringUtf8(Base64.decodeBase64(base64));
   }
 
   /**
    * convert string to LocalDate.
    */
-  public LocalDate convertDate(String date) {
+  public static LocalDate convertDate(String date) {
     try {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
       LocalDate localDate = LocalDate.parse(date, formatter);
@@ -71,30 +67,34 @@ public class GlobalMethodsService {
   }
 
   /**
+   * get secret.
+   */
+  public static String getSecret() {
+    String secret = System.getenv("SECRET");
+    if (secret == null) {
+      secret = secretDefault;
+    }
+    return secret;
+  }
+
+  /**
    * check if is a valid email.
    */
-  public boolean isValidEmailAddress(String email) {
-    boolean valid = EmailValidator.getInstance().isValid(email);
-    return valid;
+  public static boolean isValidEmailAddress(String email) {
+    return EmailValidator.getInstance().isValid(email);
   }
 
   /**
    * check the length of password.
    */
-  public boolean isValidPasswordLength(String password) {
-    if (password.length() >= 6) {
-      return true;
-    }
-    return false;
+  public static boolean isValidPasswordLength(String password) {
+    return password.length() >= 6;
   }
 
   /**
    * check the length of fullName.
    */
   public boolean isValidFullNameLength(String fullName) {
-    if (fullName.length() >= 8) {
-      return true;
-    }
-    return false;
+    return fullName.length() >= 8;
   }
 }

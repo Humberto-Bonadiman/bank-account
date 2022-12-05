@@ -39,30 +39,19 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Override
   public Account create(AccountDto accountDto, String token) {
-    global.verifyToken(token);
-    if (!global.isValidEmailAddress(accountDto.getEmail())) {
+    DecodedJWT decoded = GlobalMethodsService.verifyToken(token);
+    if (!GlobalMethodsService.isValidEmailAddress(accountDto.getEmail())) {
       throw new IncorrectEmailFormat();
     }
-    if (!global.isValidPasswordLength(accountDto.getPasswordAccount())) {
+    if (!GlobalMethodsService.isValidPasswordLength(accountDto.getPasswordAccount())) {
       throw new PasswordLengthException();
     }
-    DecodedJWT decoded = global.verifyToken(token);
-    Long numberId = global.returnIdToken(decoded);
-    Account newAccount = new Account();
-    newAccount.setEmail(accountDto.getEmail());
+    Long numberId = GlobalMethodsService.returnIdToken(decoded);
     String pwHash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
-    newAccount.setPasswordAccount(pwHash);
-    newAccount.setAccountBalance(0);
-    LocalDate localDate = global.convertDate(accountDto.getBirthDate());
-    newAccount.setBirthDate(localDate);
-    newAccount.setCountry(accountDto.getCountry());
-    newAccount.setState(accountDto.getState());
-    newAccount.setCity(accountDto.getCity());
-    newAccount.setStreet(accountDto.getStreet());
-    newAccount.setDistrict(accountDto.getDistrict());
-    newAccount.setPhoneNumber(accountDto.getPhoneNumber());
+    LocalDate localDate = GlobalMethodsService.convertDate(accountDto.getBirthDate());
     Person person = personRepository.findById(numberId).get();
-    newAccount.setPerson(person);
+    Account newAccount = new Account();
+    newAccount.buildAccount(accountDto, pwHash, localDate, person);
     person.setAccount(newAccount);
     checkIfIsNotNull(accountDto);
     Person savedPerson = personRepository.save(person);
@@ -71,7 +60,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Override
   public Account findById(String token, String id) {
-    global.verifyToken(token);
+    GlobalMethodsService.verifyToken(token);
     Optional<Account> isValidId = accountRepository.findById(id);
     if (isValidId.isEmpty()) {
       throw new AccountNotFoundException();
@@ -83,7 +72,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   public Account alterBalanceByAccountId(
       String token, String id, ValueDto value) {
     try {
-      global.verifyToken(token);
+      GlobalMethodsService.verifyToken(token);
       Optional<Account> isValidId = accountRepository.findById(id);
       if (isValidId.isEmpty()) {
         throw new AccountNotFoundException();
@@ -113,7 +102,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     if (valueDto.getValue() < 0) {
       throw new NegativeValueException();
     }
-    global.verifyToken(token);
+    GlobalMethodsService.verifyToken(token);
     Optional<Account> isValidIdTransfer = accountRepository.findById(idTransfer);
     Optional<Account> isValidIdReceiver = accountRepository.findById(idTransfer);
     if (isValidIdTransfer.isEmpty() || isValidIdReceiver.isEmpty()) {
@@ -137,7 +126,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Override
   public void updateAccount(String id, String token, AccountDto accountDto) {
-    global.verifyToken(token);
+    GlobalMethodsService.verifyToken(token);
     Optional<Account> isValidId = accountRepository.findById(id);
     if (isValidId.isEmpty()) {
       throw new AccountNotFoundException();
@@ -146,7 +135,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     account.setEmail(accountDto.getEmail());
     String pwHash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
     account.setPasswordAccount(pwHash);
-    LocalDate localDate = global.convertDate(accountDto.getBirthDate());
+    LocalDate localDate = GlobalMethodsService.convertDate(accountDto.getBirthDate());
     account.setBirthDate(localDate);
     account.setCountry(accountDto.getCountry());
     account.setState(accountDto.getState());
@@ -161,7 +150,7 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   @Override
   public void delete(String id, String token, PasswordDto password) {
     try {
-      global.verifyToken(token);
+      GlobalMethodsService.verifyToken(token);
       Optional<Account> isValidId = accountRepository.findById(id);
       if (isValidId.isEmpty()) {
         throw new AccountNotFoundException();
