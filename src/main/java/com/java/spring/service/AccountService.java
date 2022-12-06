@@ -62,16 +62,10 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
     try {
       GlobalMethodsService.verifyToken(token);
       Account account = findByIdOrThrowError(id);
-      if (!BCrypt.checkpw(value.getPassword(), account.getPasswordAccount())) {
-        throw new IncorrectPasswordException();
-      }
-      if (value.getValue() > 2000) {
-        throw new ValueDepositException();
-      }
+      checkBcryptPassword(value.getPassword(), account.getPasswordAccount());
+      valueAboveAcceptable(value.getValue());
       Integer sumValues = account.getAccountBalance() + value.getValue();
-      if (sumValues < 0) {
-        throw new WithdrawGreaterThanBalanceException();
-      }
+      withdrawGreaterThanBalance(sumValues);
       account.setAccountBalance(sumValues);
       accountRepository.save(account);
       return account;
@@ -83,15 +77,11 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   @Override
   public String bankTransfer(
       String idTransfer, String idReceiver, String token, ValueDto valueDto) {
-    if (valueDto.getValue() < 0) {
-      throw new NegativeValueException();
-    }
+    negativeValue(valueDto.getValue());
     GlobalMethodsService.verifyToken(token);
     Account accountTransfer = findByIdOrThrowError(idTransfer);
     checkBcryptPassword(valueDto.getPassword(), accountTransfer.getPasswordAccount());
-    if (accountTransfer.getAccountBalance() < valueDto.getValue()) {
-      throw new InsufficientBalanceException();
-    }
+    insufficientBallance(accountTransfer.getAccountBalance(), valueDto.getValue());
     Account accountReceiver = findByIdOrThrowError(idReceiver);
     accountTransfer.setAccountBalance(accountTransfer.getAccountBalance() - valueDto.getValue());
     accountReceiver.setAccountBalance(accountReceiver.getAccountBalance() + valueDto.getValue());
@@ -162,6 +152,30 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   private void checkBcryptPassword(String passwordDatabase, String password) {
     if (!BCrypt.checkpw(passwordDatabase, password)) {
       throw new IncorrectPasswordException();
+    }
+  }
+
+  private void valueAboveAcceptable(Integer value) {
+    if (value > 2000) {
+      throw new ValueDepositException();
+    }
+  }
+
+  private void withdrawGreaterThanBalance(Integer sumValues) {
+    if (sumValues < 0) {
+      throw new WithdrawGreaterThanBalanceException();
+    }
+  }
+
+  private void negativeValue(Integer value) {
+    if (value < 0) {
+      throw new NegativeValueException();
+    }
+  }
+
+  private void insufficientBallance(Integer valueTransfer, Integer valueReceiver) {
+    if (valueTransfer < valueReceiver) {
+      throw new InsufficientBalanceException();
     }
   }
 }
