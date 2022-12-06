@@ -17,10 +17,18 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3.4.1
+        with:
+         java-version: '11'
+         distribution: 'adopt'
+
       - name: Build
         run: mvn --batch-mode -DskipTests package
+
       - name: Test
         run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+
       - name: Report
         uses: dorny/test-reporter@v1
         if: always()
