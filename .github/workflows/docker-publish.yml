@@ -6,7 +6,7 @@ on:
 
 jobs:
   Evaluator:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Evaluator
     services:
       mysql:
