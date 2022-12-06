@@ -29,7 +29,7 @@ public class AccountController implements AccountControllerInterface {
 
   @Operation(summary = "Create an account")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Create an account", 
+      @ApiResponse(responseCode = "201", description = "Create an account", 
           content = { @Content(mediaType = "application/json", 
           schema = @Schema(implementation = Account.class)) }),
       @ApiResponse(responseCode = "400", description = "Wrong format",
