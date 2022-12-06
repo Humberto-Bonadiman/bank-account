@@ -23,21 +23,16 @@ jobs:
          java-version: '11'
          distribution: 'adopt'
 
-      - name: Build
-        working-directory: .
-        run: mvn install:install-file "-Dversion=0.98.4" "-Dpackaging=jar" "-DgeneratePom=true"
-
-      - name: Test
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
-
-      - name: Report
-        uses: dorny/test-reporter@v1
-        if: always()
+      - name: Cache Maven packages
+        #This action allows caching dependencies and build outputs to improve workflow execution time.
+        uses: actions/cache@v1
         with:
-          name: Maven Tests
-          path: target/surefire-reports/*.xml
-          reporter: java-junit
-          fail-on-error: true
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      #Run Tests
+      - name: Run Tests
+        run: mvn -B test
 
   Application:
       runs-on: ubuntu-latest
