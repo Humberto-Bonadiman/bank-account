@@ -23,6 +23,14 @@ jobs:
         with:
          java-version: '11'
          distribution: 'adopt'
+
+      - name: Bank Account Container Jar
+        working-directory: .
+        run: mvn spring-boot:build-image -DskipTests
+
+      - name: Docker Compose Build
+        working-directory: .
+        run: docker-compose build
  
       - name: Build
         run: mvn --batch-mode -DskipTests package
@@ -38,14 +46,6 @@ jobs:
           path: target/surefire-reports/*.xml
           reporter: java-junit
           fail-on-error: true
-
-      - name: Bank Account Container Jar
-        working-directory: .
-        run: mvn spring-boot:build-image -DskipTests
-
-      - name: Docker Compose Build
-        working-directory: .
-        run: docker-compose build
 
       - name: Build and push Docker images
         run: |
