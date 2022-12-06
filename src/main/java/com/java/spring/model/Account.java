@@ -23,7 +23,6 @@ public class Account {
   @GeneratedValue(generator = "uuid")
   @GenericGenerator(name = "uuid", strategy = "uuid2")
   private String id;
-  // usar integer
 
   @Column(unique = true, nullable = false)
   private String email;
