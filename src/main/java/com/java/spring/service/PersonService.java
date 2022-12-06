@@ -37,19 +37,9 @@ public class PersonService implements PersonInterface {
   @Override
   public Person create(PersonDto personDto) {
     try {
-      Optional<Person> findPerson = findByCpf(personDto.getCpf());
-      if (findPerson.isPresent()) {
-        throw new PersonAlreadyRegisteredException();
-      }
-      if (personDto.getFullName().length() < 7) {
-        throw new IncorrectFullNameLengthException();
-      }
-      if (personDto.getCpf().length() != 11) {
-        throw new IncorrectCpfLengthException();
-      }
-      if (!StringUtils.isNumeric(personDto.getCpf())) {
-        throw new CpfNotNumericException();
-      }
+      checkIfPersonExistByCpf(personDto.getCpf());
+      verifyFullNameLength(personDto.getFullName());
+      verifyCpf(personDto.getCpf());
       Person person = new Person(personDto.getFullName(), personDto.getCpf());
       return personRepository.save(person);
     } catch (NullPointerException e) {
@@ -59,16 +49,10 @@ public class PersonService implements PersonInterface {
 
   @Override
   public String generateToken(PersonDto personDto) {
-    if (personDto.getFullName() == null || personDto.getCpf() == null) {
-      throw new NullPointerException("all values is required");
-    }
-    Optional<Person> findCpf = findByCpf(personDto.getCpf());
-    if (findCpf.isEmpty()) {
-      throw new PersonNotRegisteredException();
-    }
+    verifyIfNull(personDto.getFullName(), personDto.getCpf());
     String secret = GlobalMethodsService.getSecret();
     Algorithm algorithm = Algorithm.HMAC256(secret);
-    Person personFound = findCpf.get();
+    Person personFound = findByCpf(personDto.getCpf()).get();
     Map<String, Object> payloadClaims = new HashMap<>();
     payloadClaims.put("id", personFound.getId());
     payloadClaims.put("fullName", personFound.getFullName());
@@ -95,9 +79,7 @@ public class PersonService implements PersonInterface {
     DecodedJWT decoded = GlobalMethodsService.verifyToken(token);
     Person person = findById(id);
     Long numberId = GlobalMethodsService.returnIdToken(decoded);
-    if (!numberId.equals(id)) {
-      throw new DifferentIdException();
-    }
+    sameIds(numberId, id);
     personRepository.deleteById(person.getId());
   }
 
@@ -110,8 +92,20 @@ public class PersonService implements PersonInterface {
     return date;
   }  
 
+  private Optional<Person> checkIfPersonExistByCpf(String cpf) {
+    Optional<Person> findPerson = personRepository.findByCpf(cpf);
+    if (findPerson.isPresent()) {
+      throw new PersonAlreadyRegisteredException();
+    }
+    return findPerson;
+  }
+
   private Optional<Person> findByCpf(String cpf) {
-    return personRepository.findByCpf(cpf);
+    Optional<Person> findPerson = personRepository.findByCpf(cpf);
+    if (findPerson.isEmpty()) {
+      throw new PersonNotRegisteredException();
+    }
+    return findPerson;
   }
 
   private Person findById(Long id) {
@@ -120,5 +114,32 @@ public class PersonService implements PersonInterface {
       throw new PersonNotRegisteredException();
     }
     return validPerson.get();
+  }
+
+  private void verifyFullNameLength(String fullName) {
+    if (fullName.length() < 7) {
+      throw new IncorrectFullNameLengthException();
+    }
+  }
+
+  private void verifyCpf(String cpf) {
+    if (cpf.length() != 11) {
+      throw new IncorrectCpfLengthException();
+    }
+    if (!StringUtils.isNumeric(cpf)) {
+      throw new CpfNotNumericException();
+    }
+  }
+
+  private void verifyIfNull(String fullName, String cpf) {
+    if (fullName == null || cpf == null) {
+      throw new NullPointerException("all values is required");
+    }
+  }
+
+  private void sameIds(Long idToken, Long idGiven) {
+    if (!idToken.equals(idGiven)) {
+      throw new DifferentIdException();
+    }
   }
 }
