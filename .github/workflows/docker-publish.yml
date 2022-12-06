@@ -25,7 +25,7 @@ jobs:
 
       - name: Build
         working-directory: .
-        run: mvn install:install-file "-Dfile=cobra.jar" "-DgroupId=com.cobra" "-DartifactId=cobra" "-Dversion=0.98.4" "-Dpackaging=jar" "-DgeneratePom=true"
+        run: mvn install:install-file "-Dversion=0.98.4" "-Dpackaging=jar" "-DgeneratePom=true"
 
       - name: Test
         run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
