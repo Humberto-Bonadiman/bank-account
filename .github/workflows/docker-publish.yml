@@ -8,14 +8,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: 'sua_senha_aqui'
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - uses: actions/checkout@v3
@@ -39,21 +31,6 @@ jobs:
       - name: Docker Compose Build
         working-directory: .
         run: docker-compose build
- 
-      - name: Build
-        run: mvn --batch-mode -DskipTests package
-
-      - name: Test
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
-
-      - name: Report
-        uses: dorny/test-reporter@v1
-        if: always()
-        with:
-          name: Maven Tests
-          path: target/surefire-reports/*.xml
-          reporter: java-junit
-          fail-on-error: true
 
       - name: Build and push Docker images
         run: |
