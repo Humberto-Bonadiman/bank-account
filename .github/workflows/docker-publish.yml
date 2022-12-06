@@ -28,12 +28,12 @@ jobs:
         working-directory: .
         run: mvn spring-boot:build-image -DskipTests
 
-      - name: Test with Maven
-        run: mvn -B test --file pom.xml
-
       - name: Docker Compose Build
         working-directory: .
         run: docker-compose build
+
+      - name: Test with Maven
+        run: mvn clean test
 
       - name: Build and push Docker images
         run: |
