@@ -7,6 +7,10 @@ import com.java.spring.model.Account;
 import com.java.spring.service.AccountService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +28,41 @@ public class AccountController implements AccountControllerInterface {
   AccountService accountService;
 
   @Operation(summary = "Create an account")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Create an account", 
+          content = { @Content(mediaType = "application/json", 
+          schema = @Schema(implementation = Account.class)) }),
+      @ApiResponse(responseCode = "400", description = "Wrong format",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Token not found",
+          content = @Content)})
   public ResponseEntity<Account> create(AccountDto accountDto, String token) {
     return ResponseEntity.status(HttpStatus.CREATED).body(accountService.create(accountDto, token));
   }
 
   @Operation(summary = "Find an account by id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Find an account by id", 
+          content = { @Content(mediaType = "application/json", 
+          schema = @Schema(implementation = Account.class)) }),
+      @ApiResponse(responseCode = "401", description = "Token not found",
+          content = @Content),
+      @ApiResponse(responseCode = "404", description = "Account not found",
+          content = @Content)})
   public ResponseEntity<Account> findById(String token, String id) {
     return ResponseEntity.status(HttpStatus.OK).body(accountService.findById(token, id));
   }
 
   @Operation(summary = "Make withdrawals and deposits to the account by id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Make withdrawals and deposits to the account", 
+          content = { @Content(mediaType = "application/json", 
+          schema = @Schema(implementation = Account.class)) }),
+      @ApiResponse(responseCode = "401", description = "Unathorized",
+          content = @Content),
+      @ApiResponse(responseCode = "404", description = "Account not found",
+          content = @Content)})
   public ResponseEntity<Account> alterBalanceByAccountId(
       String token,
       String id,
@@ -47,6 +76,17 @@ public class AccountController implements AccountControllerInterface {
    * bank transfer controller.
    */
   @Operation(summary = "Transfer between accounts by their ids")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Make withdrawals and deposits to the account",
+          content = { @Content(mediaType = "application/json",
+          schema = @Schema(implementation = String.class)) }),
+      @ApiResponse(responseCode = "400", description = "Bad Request",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Unathorized",
+          content = @Content),
+      @ApiResponse(responseCode = "404", description = "Account not found",
+          content = @Content)})
   public ResponseEntity<String> bankTransfer(
       String token,
       String idTransfer,
@@ -64,6 +104,15 @@ public class AccountController implements AccountControllerInterface {
   }
 
   @Operation(summary = "Change account data through id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204",
+          content = @Content),
+      @ApiResponse(responseCode = "400", description = "Bad Request",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Unathorized",
+          content = @Content),
+      @ApiResponse(responseCode = "404", description = "Account not found",
+          content = @Content)})
   public ResponseEntity<Object> updateAccount(
       String id,
       String token,
@@ -74,6 +123,13 @@ public class AccountController implements AccountControllerInterface {
   }
 
   @Operation(summary = "Delete account data by id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Unathorized",
+          content = @Content),
+      @ApiResponse(responseCode = "404", description = "Account not found",
+          content = @Content)})
   public ResponseEntity<Object> delete(
       String token,
       String id,
