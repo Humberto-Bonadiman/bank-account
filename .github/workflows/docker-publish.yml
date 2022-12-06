@@ -12,10 +12,9 @@ jobs:
       mysql:
         image: mysql:8
         env:
-          MYSQL_ROOT_PASSWORD: 'password'
+          MYSQL_ROOT_PASSWORD: 'sua_senha_aqui'
         ports:
           - 3306:3306
-          - 33060:33060
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
