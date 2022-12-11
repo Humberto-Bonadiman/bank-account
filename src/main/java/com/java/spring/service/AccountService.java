@@ -19,12 +19,12 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
-@Component
 public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Autowired
@@ -69,8 +69,8 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       account.setAccountBalance(sumValues);
       accountRepository.save(account);
       return account;
-    } catch (NullPointerException e) {
-      throw new NullPointerException("all values are required");
+    } catch (ResponseStatusException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values are required");
     }
   }
 
@@ -116,8 +116,8 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       Account account = findByIdOrThrowError(id);
       checkBcryptPassword(password.getPassword(), account.getPasswordAccount());
       accountRepository.deleteById(id);
-    } catch (NullPointerException e) {
-      throw new NullPointerException("'password' is required");
+    } catch (ResponseStatusException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "'password' is required");
     }
 
   }
@@ -137,7 +137,10 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
         || accountDto.getPhoneNumber() == null) {
       String firstPart = "the values email, passwordAccount, birthDate, country, state";
       String secondPart = ", city, street, district, phoneNumber";
-      throw new NullPointerException(firstPart + secondPart + " are required");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          firstPart + secondPart + " are required"
+      );
     }
   }
 

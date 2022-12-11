@@ -38,7 +38,7 @@ public interface PersonControllerInterface {
 
   @GetMapping
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Generate a token", 
+      @ApiResponse(responseCode = "200", description = "Find all people", 
           content = { @Content(mediaType = "application/json", 
           array = @ArraySchema(schema = @Schema(implementation = Person.class))) }),
       @ApiResponse(responseCode = "401", description = "Unathorized",

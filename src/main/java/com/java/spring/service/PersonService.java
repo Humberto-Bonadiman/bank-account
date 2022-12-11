@@ -24,11 +24,11 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
-@Component
 public class PersonService implements PersonInterface {
 
   @Autowired
@@ -42,8 +42,8 @@ public class PersonService implements PersonInterface {
       verifyCpf(personDto.getCpf());
       Person person = new Person(personDto.getFullName(), personDto.getCpf());
       return personRepository.save(person);
-    } catch (NullPointerException e) {
-      throw new NullPointerException("all values is required");
+    } catch (ResponseStatusException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values is required");
     }
   }
 
@@ -133,7 +133,7 @@ public class PersonService implements PersonInterface {
 
   private void verifyIfNull(String fullName, String cpf) {
     if (fullName == null || cpf == null) {
-      throw new NullPointerException("all values is required");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values is required");
     }
   }
 

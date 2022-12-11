@@ -12,7 +12,6 @@ public class GlobalExceptions {
   @ExceptionHandler({
       IncorrectFullNameLengthException.class,
       IncorrectCpfLengthException.class,
-      NullPointerException.class,
       DatetimeConvertionException.class,
       IncorrectEmailFormat.class,
       PasswordLengthException.class,
