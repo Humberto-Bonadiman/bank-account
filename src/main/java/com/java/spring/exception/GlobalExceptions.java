@@ -18,12 +18,12 @@ public class GlobalExceptions {
       WithdrawGreaterThanBalanceException.class,
       CpfNotNumericException.class
   })
-  public ResponseEntity<Object> handlerBadRequest(RuntimeException exception) {
+  public ResponseEntity<Object> handlerBadRequest(Exception exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler({PersonAlreadyRegisteredException.class})
-  public ResponseEntity<Object> handlerConflict(RuntimeException exception) {
+  public ResponseEntity<Object> handlerConflict(Exception exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.CONFLICT);
   }
 
@@ -36,12 +36,12 @@ public class GlobalExceptions {
       IncorrectPasswordException.class,
       DifferentIdException.class
   })
-  public ResponseEntity<Object> handlerUnauthorized(RuntimeException exception) {
+  public ResponseEntity<Object> handlerUnauthorized(Exception exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.UNAUTHORIZED);
   }
 
   @ExceptionHandler({PersonNotRegisteredException.class, AccountNotFoundException.class})
-  public ResponseEntity<Object> handlerNotFound(RuntimeException exception) {
+  public ResponseEntity<Object> handlerNotFound(Exception exception) {
     return new ResponseEntity<>(new DataError(exception.getMessage()), HttpStatus.NOT_FOUND);
   }
 }

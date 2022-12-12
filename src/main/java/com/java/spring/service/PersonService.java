@@ -36,15 +36,12 @@ public class PersonService implements PersonInterface {
 
   @Override
   public Person create(PersonDto personDto) {
-    try {
-      checkIfPersonExistByCpf(personDto.getCpf());
-      verifyFullNameLength(personDto.getFullName());
-      verifyCpf(personDto.getCpf());
-      Person person = new Person(personDto.getFullName(), personDto.getCpf());
-      return personRepository.save(person);
-    } catch (ResponseStatusException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values is required");
-    }
+    verifyIfNull(personDto.getFullName(), personDto.getCpf());
+    checkIfPersonExistByCpf(personDto.getCpf());
+    verifyFullNameLength(personDto.getFullName());
+    verifyCpf(personDto.getCpf());
+    Person person = new Person(personDto.getFullName(), personDto.getCpf());
+    return personRepository.save(person);
   }
 
   @Override

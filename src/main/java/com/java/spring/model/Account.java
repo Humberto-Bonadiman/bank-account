@@ -167,7 +167,7 @@ public class Account {
   ) {
     setEmail(accountDto.getEmail());
     setPasswordAccount(pwHash);
-    setAccountBalance(0);
+    setAccountBalance(verifyAccountBalance());
     setBirthDate(localDate);
     setCountry(accountDto.getCountry());
     setState(accountDto.getState());
@@ -176,5 +176,10 @@ public class Account {
     setDistrict(accountDto.getDistrict());
     setPhoneNumber(accountDto.getPhoneNumber());
     setPerson(person);
+  }
+
+  private Integer verifyAccountBalance() {
+    return getAccountBalance() == 0
+        || getAccountBalance() == null ? 0 : getAccountBalance();
   }
 }

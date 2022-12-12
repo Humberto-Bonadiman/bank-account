@@ -58,25 +58,29 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
 
   @Override
   public Account alterBalanceByAccountId(
-      String token, String id, ValueDto value) {
-    try {
-      GlobalMethodsService.verifyToken(token);
-      Account account = findByIdOrThrowError(id);
-      checkBcryptPassword(value.getPassword(), account.getPasswordAccount());
-      valueAboveAcceptable(value.getValue());
-      Integer sumValues = account.getAccountBalance() + value.getValue();
-      withdrawGreaterThanBalance(sumValues);
-      account.setAccountBalance(sumValues);
-      accountRepository.save(account);
-      return account;
-    } catch (ResponseStatusException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values are required");
-    }
+      String token,
+      String id,
+      ValueDto value
+  ) {
+    GlobalMethodsService.verifyToken(token);
+    checkIfIsNull(value.getPassword(), Integer.toString(value.getValue()));
+    Account account = findByIdOrThrowError(id);
+    checkBcryptPassword(value.getPassword(), account.getPasswordAccount());
+    valueAboveAcceptable(value.getValue());
+    Integer sumValues = account.getAccountBalance() + value.getValue();
+    withdrawGreaterThanBalance(sumValues);
+    account.setAccountBalance(sumValues);
+    accountRepository.save(account);
+    return account;
   }
 
   @Override
   public String bankTransfer(
-      String idTransfer, String idReceiver, String token, ValueDto valueDto) {
+      String idTransfer,
+      String idReceiver,
+      String token,
+      ValueDto valueDto
+  ) {
     negativeValue(valueDto.getValue());
     GlobalMethodsService.verifyToken(token);
     Account accountTransfer = findByIdOrThrowError(idTransfer);
@@ -93,33 +97,21 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
   @Override
   public void updateAccount(String id, String token, AccountDto accountDto) {
     GlobalMethodsService.verifyToken(token);
-    Account account = findByIdOrThrowError(id);
-    account.setEmail(accountDto.getEmail());
     String pwHash = BCrypt.hashpw(accountDto.getPasswordAccount(), BCrypt.gensalt());
-    account.setPasswordAccount(pwHash);
     LocalDate localDate = GlobalMethodsService.convertDate(accountDto.getBirthDate());
-    account.setBirthDate(localDate);
-    account.setCountry(accountDto.getCountry());
-    account.setState(accountDto.getState());
-    account.setCity(accountDto.getCity());
-    account.setDistrict(accountDto.getDistrict());
-    account.setStreet(accountDto.getStreet());
-    account.setPhoneNumber(accountDto.getPhoneNumber());
+    Account account = findByIdOrThrowError(id);
+    account.buildAccount(accountDto, pwHash, localDate, account.getPerson());
     checkIfIsNotNull(accountDto);
     accountRepository.save(account);
   }
 
   @Override
   public void delete(String id, String token, PasswordDto password) {
-    try {
-      GlobalMethodsService.verifyToken(token);
-      Account account = findByIdOrThrowError(id);
-      checkBcryptPassword(password.getPassword(), account.getPasswordAccount());
-      accountRepository.deleteById(id);
-    } catch (ResponseStatusException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "'password' is required");
-    }
-
+    GlobalMethodsService.verifyToken(token);
+    checkIfIsNull(password.getPassword());
+    Account account = findByIdOrThrowError(id);
+    checkBcryptPassword(password.getPassword(), account.getPasswordAccount());
+    accountRepository.deleteById(id);
   }
 
   /**
@@ -150,6 +142,18 @@ public class AccountService implements AccountInterface<AccountDto, Account> {
       throw new AccountNotFoundException();
     }
     return validAccount.get();
+  }
+
+  private void checkIfIsNull(String value) {
+    if (value == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values are required");
+    }
+  }
+
+  private void checkIfIsNull(String firstValue, String secondValue) {
+    if (firstValue == null || secondValue == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "all values are required");
+    }
   }
 
   private void checkBcryptPassword(String passwordDatabase, String password) {

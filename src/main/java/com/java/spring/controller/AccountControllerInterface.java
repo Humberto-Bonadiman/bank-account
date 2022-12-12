@@ -5,6 +5,7 @@ import com.java.spring.dto.PasswordDto;
 import com.java.spring.dto.ValueDto;
 import com.java.spring.model.Account;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/account")
 public interface AccountControllerInterface {
@@ -32,6 +34,7 @@ public interface AccountControllerInterface {
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Token not found",
           content = @Content)})
+  @Operation(summary = "Create an account")
   public ResponseEntity<Account> create(
       @RequestBody AccountDto accountDto,
       @RequestHeader(value = "token", defaultValue = "") String token
@@ -46,6 +49,7 @@ public interface AccountControllerInterface {
           content = @Content),
       @ApiResponse(responseCode = "404", description = "Account not found",
           content = @Content)})
+  @Operation(summary = "Find an account by id")
   public ResponseEntity<Account> findById(
       @RequestHeader(value = "token", defaultValue = "") String token,
       @PathVariable String id
@@ -61,13 +65,14 @@ public interface AccountControllerInterface {
           content = @Content),
       @ApiResponse(responseCode = "404", description = "Account not found",
           content = @Content)})
+  @Operation(summary = "Make withdrawals and deposits to the account by id")
   public ResponseEntity<Account> alterBalanceByAccountId(
       @RequestHeader(value = "token", defaultValue = "") String token,
       @PathVariable String id,
       @RequestBody ValueDto value
   );
 
-  @PatchMapping("/update/{id}")
+  @PatchMapping("/{id}")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204",
           content = @Content),
@@ -77,13 +82,14 @@ public interface AccountControllerInterface {
           content = @Content),
       @ApiResponse(responseCode = "404", description = "Account not found",
           content = @Content)})
+  @Operation(summary = "Change account data through id")
   public ResponseEntity<Object> updateAccount(
       @PathVariable String id,
       @RequestHeader(value = "token", defaultValue = "") String token,
       @RequestBody AccountDto accountDto
   );
 
-  @PatchMapping("/{idTransfer}/to/{idReceiver}")
+  @PatchMapping("/transfer")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Make withdrawals and deposits to the account",
@@ -95,10 +101,11 @@ public interface AccountControllerInterface {
           content = @Content),
       @ApiResponse(responseCode = "404", description = "Account not found",
           content = @Content)})
+  @Operation(summary = "Transfer between accounts by their ids")
   public ResponseEntity<String> bankTransfer(
       @RequestHeader(value = "token", defaultValue = "") String token,
-      @PathVariable String idTransfer,
-      @PathVariable String idReceiver,
+      @RequestParam String idTransfer,
+      @RequestParam String idReceiver,
       @RequestBody ValueDto transferDto
   );
 
@@ -110,6 +117,7 @@ public interface AccountControllerInterface {
           content = @Content),
       @ApiResponse(responseCode = "404", description = "Account not found",
           content = @Content)})
+  @Operation(summary = "Delete account data by id")
   public ResponseEntity<Object> delete(
       @RequestHeader(value = "token", defaultValue = "") String token,
       @PathVariable String id,
